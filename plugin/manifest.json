@@ -1,9 +1,12 @@
 {
-  "name": "vigil",
-  "version": "0.1.0",
-  "description": "AI coding security co-pilot — blocks insecure IaC, secrets, and Dockerfile misconfigurations at AI generation time",
-  "author": "vigilsec",
-  "license": "MIT",
+  "name": "valca",
+  "version": "0.5.0",
+  "description": "AI coding security co-pilot — blocks insecure code at generation time",
+  "author": {
+    "name": "Prem Kumar Akula"
+  },
+  "license": "BUSL-1.1",
+  "repository": "https://github.com/vigilsec-io/cordon",
   "keywords": ["security", "iac", "docker", "secrets", "linter", "devsecops"],
   "hooks": {
     "PostToolUse": {
@@ -15,30 +18,12 @@
   },
   "install": {
     "steps": [
-      "pip install vigil",
-      "vigil init"
+      "pip install valca",
+      "valca init"
     ],
     "global_steps": [
-      "pip install vigil",
-      "vigil init --global"
+      "pip install valca",
+      "valca init --global"
     ]
-  },
-  "rules": [
-    {"id": "VGL-D001",   "severity": "CRITICAL", "name": "Docker port binding exposed to 0.0.0.0"},
-    {"id": "VGL-S001",   "severity": "CRITICAL", "name": "AWS access key hardcoded"},
-    {"id": "VGL-S002",   "severity": "CRITICAL", "name": "Hardcoded password"},
-    {"id": "VGL-S003",   "severity": "HIGH",     "name": "Hardcoded API key"},
-    {"id": "VGL-S004",   "severity": "HIGH",     "name": "Hardcoded token"},
-    {"id": "VGL-I001",   "severity": "CRITICAL", "name": "eval() injection risk"},
-    {"id": "VGL-I002",   "severity": "HIGH",     "name": "subprocess shell=True"},
-    {"id": "VGL-I003",   "severity": "HIGH",     "name": "os.system() call"},
-    {"id": "VGL-DF001",  "severity": "HIGH",     "name": "Dockerfile runs as root"},
-    {"id": "VGL-DF002",  "severity": "MEDIUM",   "name": "Dockerfile uses :latest base image"},
-    {"id": "VGL-DF003",  "severity": "HIGH",     "name": "Dockerfile bakes secret into ENV/ARG"},
-    {"id": "VGL-N001",   "severity": "HIGH",     "name": "nginx missing security headers or weak TLS"},
-    {"id": "VGL-T001",   "severity": "HIGH",     "name": "Trivy IaC deep scan — Dockerfile/Terraform"},
-    {"id": "VGL-DEP001", "severity": "HIGH",     "name": "pip-audit CVE findings"},
-    {"id": "VGL-DEP002", "severity": "HIGH",     "name": "npm audit CVE findings"},
-    {"id": "VGL-S011",   "severity": "HIGH",     "name": "Insecure placeholder default for security-critical config"}
-  ]
+  }
 }

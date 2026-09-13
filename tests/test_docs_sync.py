@@ -19,6 +19,7 @@ from valca.rules import DEFAULT_RULES
 REPO = Path(__file__).resolve().parent.parent
 README = REPO / "README.md"
 VSCODE_README = REPO / "vigil-vscode" / "README.md"
+MANIFEST = REPO / "plugin" / "manifest.json"
 
 # Rule IDs emitted by a parent rule class rather than registered separately.
 # Keep in sync with the class that raises them; the test below proves they are real.
@@ -129,3 +130,72 @@ def test_catalogue_has_no_empty_cells() -> None:
     """Guard the rendered table, not just the source objects."""
     blank = re.findall(r"^\| (VGL-[A-Z]+\d+) \| [A-Z]+ \|\s*\|$", README.read_text(), re.M)
     assert not blank, f"Catalogue rows with an empty 'What it catches' column: {blank}"
+
+
+# ── Plugin manifest ──────────────────────────────────────────────────────────
+# The manifest is a published surface that no test read until 2026-09-13, by
+# which point it named the wrong licence (MIT — actually the BUSL Change
+# License, four years out), the wrong version (0.1.0 against a shipped 0.5.0),
+# the old product name, and told users to `pip install vigil` — a package on
+# PyPI that belongs to somebody else entirely.
+
+
+def _manifest() -> dict:
+    import json
+
+    return json.loads(MANIFEST.read_text())
+
+
+def _pyproject() -> dict:
+    import tomllib
+
+    return tomllib.loads((REPO / "pyproject.toml").read_text())["project"]
+
+
+def test_manifest_identity_matches_packaging() -> None:
+    """Name and version are the same facts pyproject.toml already states."""
+    manifest, project = _manifest(), _pyproject()
+    assert manifest["name"] == project["name"], (
+        f"manifest name {manifest['name']!r} != package name {project['name']!r}"
+    )
+    assert manifest["version"] == project["version"], (
+        f"manifest version {manifest['version']} != package version {project['version']}"
+    )
+
+
+def test_manifest_states_the_current_licence() -> None:
+    """BUSL-1.1 names MIT as the Change License. That is not today's licence.
+
+    Publishing 'MIT' on a product with a paid tier gives away the terms the
+    paid tier rests on.
+    """
+    declared = _manifest().get("license", "")
+    licence_title = (REPO / "LICENSE").read_text().splitlines()[0].strip()
+    assert "Business Source License 1.1" in licence_title, (
+        f"LICENSE no longer starts with the BUSL title ({licence_title!r}) — update this test"
+    )
+    assert declared == "BUSL-1.1", (
+        f"manifest declares licence {declared!r}, but LICENSE is {licence_title!r}"
+    )
+
+
+def test_manifest_install_steps_name_the_package_we_publish() -> None:
+    """`pip install <name>` must name our package, not a stranger's.
+
+    The manifest said `pip install vigil`. `vigil` is live on PyPI under a
+    different author, so anyone following the manifest installed someone
+    else's code on the strength of our instructions.
+    """
+    ours = _pyproject()["name"]
+    steps = [s for v in _manifest().get("install", {}).values() for s in v]
+    installed = re.findall(r"pip install\s+([A-Za-z0-9._-]+)", " ".join(steps))
+    assert installed, "manifest install steps contain no `pip install` line"
+    wrong = sorted({p for p in installed if p != ours})
+    assert not wrong, f"manifest tells users to install {wrong}, but we publish {ours!r}"
+
+
+def test_manifest_lists_no_rule_the_engine_does_not_emit() -> None:
+    """A manifest rule list is optional; a fictional one is not acceptable."""
+    listed = {r["id"] for r in _manifest().get("rules", [])}
+    phantom_rules = sorted(listed - engine_rule_ids())
+    assert not phantom_rules, f"manifest lists rules the engine does not emit: {phantom_rules}"

@@ -1,4 +1,4 @@
-Vigil
+Valca
 Copyright (c) 2026 Prem Kumar Akula. All rights reserved.
 
 Created: 2026-06-26
@@ -12,5 +12,17 @@ The VGL-D001 rule (docker-compose port binding to 0.0.0.0 without
 127.0.0.1 prefix) represents a novel detection approach not implemented
 by any known IaC scanning tool as of the creation date above.
 
-Commercial use requires a separate license agreement.
-Contact: https://github.com/vigilsec-io/cordon/issues
+Licensing
+---------
+Valca is licensed under the Business Source License 1.1. The LICENSE file
+is the governing document; nothing in this notice modifies, qualifies, or
+supplements it. Where the two appear to differ, LICENSE controls.
+
+For orientation only, the terms in LICENSE are that production use is
+permitted, including commercial use, except that the Licensed Work may not
+be offered to third parties on a hosted or embedded basis in order to
+compete with Valca's paid commercial offerings. Each version converts to
+the MIT License four years after it is first publicly distributed.
+
+For information about alternative licensing arrangements, please contact:
+https://github.com/vigilsec-io/cordon/issues
