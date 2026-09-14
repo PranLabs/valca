@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **The `valca`-named config file, suppression comment and telemetry opt-out now work.**
+  Release 0.4.0 documented five compatibility guarantees between the old and new names.
+  Four were never implemented, and 0.4.0, 0.4.1 and 0.5.0 all shipped with the
+  documentation describing behaviour the code did not have.
+
+| Documented | Actual behaviour until now |
+|---|---|
+| `.valcarc` is read, and takes precedence over `.vigilrc` | Only `.vigilrc` was read. A project configured through `.valcarc` ran on defaults: disabled rules still fired, `exclude_paths` was ignored, `min_severity` had no effect |
+| `# valca: ignore` suppresses a finding | Only `# vigil: ignore` worked |
+| `VALCA_NO_TELEMETRY=1` disables telemetry | Only `VIGIL_NO_TELEMETRY` was checked |
+| Scan history migrates to `~/.valca/events.jsonl` | No migration ran, and `valca stats` read a path that no longer held the data |
+
+  If you set `VALCA_NO_TELEMETRY` expecting it to apply, it did not. Telemetry has
+  always been local-only and makes no network calls, so nothing was transmitted — but
+  events were written after you had asked for them not to be. Deleting
+  `~/.valca/events.jsonl` clears that history.
+
+  Every row above now has a test in `tests/test_compat_guarantees.py`.
+
+- `valca stats`, `valca log` and `valca init` printed the pre-rename product name.
+
 ## 0.5.0
 
 ### Added

@@ -63,7 +63,7 @@ def _run_init(global_install: bool) -> None:
     for entry in post_tool_use:
         for h in entry.get("hooks", []):
             if Path(h.get("command", "")).name == hook_sh.name:
-                print(f"Vigil hook already installed in {settings_path}")
+                print(f"Valca hook already installed in {settings_path}")
                 return
 
     post_tool_use.append({
@@ -71,7 +71,7 @@ def _run_init(global_install: bool) -> None:
         "hooks": [{"type": "command", "command": str(hook_sh)}],
     })
     settings_path.write_text(_json.dumps(settings, indent=2) + "\n")
-    print(f"Vigil hook installed → {settings_path}")
+    print(f"Valca hook installed → {settings_path}")
     print("Reload Claude Code to activate.")
 
 
@@ -111,7 +111,7 @@ def _run_stats(fmt: str = "terminal") -> None:
     def _sev(s: str) -> str:
         return f"{_SEV_COLOR.get(s, '')}{s}{_R}"
 
-    print(f"\n{_B}Vigil — local scan stats{_R}")
+    print(f"\n{_B}Valca — local scan stats{_R}")
     print("─" * 60)
     fp_note = f"  {_D}({total_fp} suppressed via ignore markers){_R}" if total_fp else ""
     print(f"  {_B}Total findings recorded{_R}   {total}{fp_note}")
@@ -155,7 +155,7 @@ def _run_stats(fmt: str = "terminal") -> None:
         for rid, s in sorted(low_prec, key=lambda x: x[1]["precision"]):
             print(f"  {rid:<14}  {int(s['precision']*100)}%  ({s['fp_count']} suppressed / {s['count'] + s['fp_count']} total)")
 
-    print(f"\n{_D}Stats are local-only · stored at ~/.vigil/events.jsonl{_R}\n")
+    print(f"\n{_D}Stats are local-only · stored at ~/.valca/events.jsonl{_R}\n")
 
 
 def _run_log(args) -> None:
@@ -186,7 +186,7 @@ def _run_log(args) -> None:
     _D = "\033[2m"
     _B = "\033[1m"
 
-    print(f"\n{_B}Vigil findings log{_R}  {_D}({len(entries)} shown · {findingslog._log_path()}){_R}\n")
+    print(f"\n{_B}Valca findings log{_R}  {_D}({len(entries)} shown · {findingslog._log_path()}){_R}\n")
     print(f"  {'DATE':<12}  {'SEV':<8}  {'RULE':<14}  {'FILE':<30}  TITLE")
     print("  " + "─" * 84)
 
@@ -228,15 +228,15 @@ def main() -> None:
     )
     scan_p.add_argument("--no-color", action="store_true", help="Disable ANSI color output")
 
-    init_p = sub.add_parser("init", help="Wire the Vigil PostToolUse hook into .claude/settings.json")
+    init_p = sub.add_parser("init", help="Wire the Valca PostToolUse hook into .claude/settings.json")
     init_p.add_argument(
         "--global", dest="global_install", action="store_true",
         help="Install into ~/.claude/settings.json (user-wide) instead of ./.claude/settings.json",
     )
 
-    sub.add_parser("feedback", help="Open the Vigil feedback & waitlist page")
+    sub.add_parser("feedback", help="Open the Valca feedback & waitlist page")
 
-    stats_p = sub.add_parser("stats", help="Show local scan statistics from ~/.vigil/events.jsonl")
+    stats_p = sub.add_parser("stats", help="Show local scan statistics from ~/.valca/events.jsonl")
     stats_p.add_argument(
         "--format", choices=["terminal", "json"], default="terminal",
         help="Output format (default: terminal)",
@@ -316,7 +316,7 @@ def main() -> None:
             _dim = "\033[2m" if not args.no_color else ""
             _rst = "\033[0m" if not args.no_color else ""
             print(
-                f"{_dim}── Vigil · github.com/vigilsec-io/cordon ──{_rst}",
+                f"{_dim}── Valca · github.com/vigilsec-io/cordon ──{_rst}",
                 file=sys.stderr,
             )
 

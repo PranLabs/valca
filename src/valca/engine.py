@@ -4,7 +4,9 @@ from . import telemetry as _telemetry
 from . import findingslog as _findingslog
 
 
-_SUPPRESS_MARKERS = ("# vigil: ignore", "# pragma: allowlist secret")
+#: `# vigil: ignore` is the pre-rename marker and is honoured permanently —
+#: suppressions already written into user code must never start firing again.
+_SUPPRESS_MARKERS = ("# valca: ignore", "# vigil: ignore", "# pragma: allowlist secret")
 
 
 class Engine:
@@ -15,8 +17,9 @@ class Engine:
     def scan(self, path: Path) -> list[Finding]:
         """Scan a single file. Returns findings sorted by severity (CRITICAL first).
 
-        Lines containing '# vigil: ignore' or '# pragma: allowlist secret' are
-        suppressed — same pattern as '# noqa' (flake8) and '# nosec' (bandit).
+        Lines containing '# valca: ignore' (or the older '# vigil: ignore', or
+        '# pragma: allowlist secret') are suppressed — same pattern as '# noqa'
+        (flake8) and '# nosec' (bandit).
         Suppressed findings are recorded as false-positive events in telemetry so
         per-rule precision can be tracked over time.
         """
