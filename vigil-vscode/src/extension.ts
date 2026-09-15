@@ -24,22 +24,23 @@ const SEVERITY_MAP: Record<string, vscode.DiagnosticSeverity> = {
   INFO:     vscode.DiagnosticSeverity.Hint,
 };
 
-// Candidate locations where pip installs the vigil binary
-const VIGIL_CANDIDATES = [
-  'vigil',
-  path.join(os.homedir(), '.local', 'bin', 'vigil'),
-  path.join(os.homedir(), 'Library', 'Python', '3.11', 'bin', 'vigil'),
-  path.join(os.homedir(), 'Library', 'Python', '3.12', 'bin', 'vigil'),
-  path.join(os.homedir(), 'Library', 'Python', '3.13', 'bin', 'vigil'),
-  path.join(os.homedir(), '.pyenv', 'versions', '3.12.13', 'bin', 'vigil'),
-  path.join(os.homedir(), '.pyenv', 'versions', '3.11.0', 'bin', 'vigil'),
-  path.join(os.homedir(), '.pyenv', 'shims', 'vigil'),
-  '/usr/local/bin/vigil',
-  'valca',
-    '/opt/homebrew/bin/valca',
-    '/usr/local/bin/valca',
-    '/opt/homebrew/bin/vigil',
-];
+// Where pip may have installed the executable. `valca` is the current name and
+// is tried first; `vigil` is the pre-rename name and still ships as an alias, so
+// it stays here for anyone who installed before 0.4.0. Each candidate must prove
+// it runs (see findValcaExecutable) — a stale entry-point script left behind by
+// an earlier install remains executable but fails to import.
+const EXECUTABLE_NAMES = ['valca', 'vigil'];
+
+const EXECUTABLE_CANDIDATES = EXECUTABLE_NAMES.flatMap((name) => [
+  name,
+  path.join(os.homedir(), '.local', 'bin', name),
+  path.join(os.homedir(), 'Library', 'Python', '3.13', 'bin', name),
+  path.join(os.homedir(), 'Library', 'Python', '3.12', 'bin', name),
+  path.join(os.homedir(), 'Library', 'Python', '3.11', 'bin', name),
+  path.join(os.homedir(), '.pyenv', 'shims', name),
+  '/opt/homebrew/bin/' + name,
+  '/usr/local/bin/' + name,
+]);
 
 let resolvedExecutable: string | null = null;
 
@@ -51,7 +52,7 @@ async function findValcaExecutable(): Promise<string> {
 
   if (resolvedExecutable) return resolvedExecutable;
 
-  for (const candidate of VIGIL_CANDIDATES) {
+  for (const candidate of EXECUTABLE_CANDIDATES) {
     try {
       await execFileAsync(candidate, ['--help']);
       resolvedExecutable = candidate;
@@ -60,7 +61,7 @@ async function findValcaExecutable(): Promise<string> {
       continue;
     }
   }
-  return 'vigil';
+  return 'valca';
 }
 
 function parseFindings(raw: string): ValcaFinding[] {

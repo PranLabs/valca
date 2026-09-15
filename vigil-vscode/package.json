@@ -2,7 +2,7 @@
   "name": "vigil-security",
   "displayName": "Valca Security",
   "description": "AI coding security co-pilot \u2014 blocks insecure code at generation time. Catches docker-compose port exposure, secrets, AI agent patterns, and more.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "vigilsec",
   "license": "BUSL-1.1",
   "engines": {
