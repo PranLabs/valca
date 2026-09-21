@@ -24,6 +24,8 @@
   Every row above now has a test in `tests/test_compat_guarantees.py`.
 
 - `valca stats`, `valca log` and `valca init` printed the pre-rename product name.
+- `valca --help` answered `usage: vigil`. The command now reports whichever name
+  it was invoked as.
 
 ## 0.5.0
 

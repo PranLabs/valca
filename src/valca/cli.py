@@ -211,7 +211,9 @@ def _run_log(args) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="vigil",
+        # No prog=: argparse falls back to sys.argv[0], so the tool calls itself
+        # whichever name the user invoked. Hardcoding it meant `valca --help`
+        # printed "usage: vigil", contradicting the documented primary command.
         description="AI coding security co-pilot — blocks insecure code at generation time.",
     )
     sub = parser.add_subparsers(dest="command")

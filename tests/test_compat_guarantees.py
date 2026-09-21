@@ -34,6 +34,28 @@ def test_both_commands_are_installed() -> None:
     assert scripts["valca"] == scripts["vigil"], "the two commands must share an entry point"
 
 
+@pytest.mark.parametrize("invoked_as", ["valca", "vigil"])
+def test_help_names_the_command_the_user_typed(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], invoked_as: str
+) -> None:
+    """`valca --help` must not answer "usage: vigil".
+
+    prog was hardcoded to "vigil", so the tool announced the pre-rename name to
+    every user of the documented one.
+    """
+    import contextlib
+
+    from valca import cli
+
+    monkeypatch.setattr("sys.argv", [invoked_as, "--help"])
+    with contextlib.suppress(SystemExit):
+        cli.main()
+    usage = capsys.readouterr().out
+    assert usage.startswith(f"usage: {invoked_as}"), (
+        f"invoked as {invoked_as!r}, help says: {usage.splitlines()[0]!r}"
+    )
+
+
 # ── Row 2: both suppression markers honoured ─────────────────────────────────
 
 
