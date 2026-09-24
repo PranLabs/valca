@@ -24,6 +24,14 @@ Issues = "https://github.com/vigilsec-io/cordon/issues"
 [project.scripts]
 valca = "valca.cli:main"
 vigil = "valca.cli:main"
+valca-mcp = "valca.mcp_server:main"
+
+# The MCP server is the only part of Valca that needs a third-party package, so
+# it is an extra rather than a dependency. `dependencies = []` above is a
+# security property of the core — installing a scanner should not pull a
+# dependency tree into the environment being scanned.
+[project.optional-dependencies]
+mcp = ["mcp>=2.2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

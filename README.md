@@ -518,6 +518,51 @@ Findings appear as inline annotations on PR diffs in the GitHub Security tab.
 
 ---
 
+## MCP server
+
+The hook blocks an agent. The MCP server lets one ask.
+
+```bash
+pip install "valca[mcp]"
+valca-mcp
+```
+
+Register it with any MCP client — for Claude Code, `claude mcp add valca -- valca-mcp`.
+Two tools, both read-only:
+
+| Tool | Returns |
+|---|---|
+| `scan(path)` | Findings for a file or directory: rule, severity, message, file, line, suggested fix |
+| `list_rules()` | The full catalogue — every rule id, severity, and what it catches |
+
+There is no tool that edits, fixes or writes anything. A scanner that can modify
+code is a new attack surface, and it is the one `VGL-MCP003` and `VGL-MCP005`
+exist to catch.
+
+Three limits are built in rather than configurable:
+
+- **Scanning cannot leave the root.** That root is the directory `valca-mcp`
+  started in, or `VALCA_MCP_ROOT` if set. The agent picks the argument to
+  `scan`, so without a boundary it could walk to `~/.ssh` and map a filesystem
+  it was never given.
+- **Paths come back relative to that root.** An absolute path carries your
+  username and directory layout.
+- **Matched source lines are never returned.** For the secret rules that line
+  *is* the secret.
+
+Telemetry is off on this path whatever your configuration says. Your `.valcarc`
+is still honoured — `disabled_rules`, `exclude_paths` and `min_severity` all
+apply.
+
+`mcp` is an optional extra, so installing Valca normally still pulls no runtime
+dependencies at all.
+
+The hook remains the enforcement path. It runs on every write whether the model
+wants it or not; MCP is opt-in by the agent, and a check an agent can decline is
+not enforcement.
+
+---
+
 ## Development
 
 ```bash

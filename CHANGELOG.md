@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+### Added
+
+- **MCP server.** `pip install "valca[mcp]"` then `valca-mcp` exposes Valca to any
+  MCP client. Two tools, both declared read-only to the protocol: `scan(path)` and
+  `list_rules()`. There is no tool that edits or fixes anything — a scanner that can
+  modify code is the attack surface `VGL-MCP003` and `VGL-MCP005` exist to catch.
+
+  Scanning cannot leave the root directory the server was started in (or
+  `VALCA_MCP_ROOT`), returned paths are relative to it, and matched source lines are
+  never returned — for the secret rules, that line is the secret. Telemetry is off on
+  this path regardless of configuration; `.valcarc` is otherwise honoured in full.
+
+  `mcp` is an optional extra, so the core keeps `dependencies = []`.
+
+  The PostToolUse hook remains the enforcement path. MCP is opt-in by the agent, and
+  a check an agent can decline is not enforcement.
+
 ### Fixed
 
 - **The `valca`-named config file, suppression comment and telemetry opt-out now work.**
