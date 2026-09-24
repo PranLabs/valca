@@ -153,7 +153,12 @@ class TestEngineWritesToLog:
 
         f = tmp_path / "code.py"
         f.write_text("x = 1\n")
-        engine = Engine(rules=[AlwaysFindsRule()], telemetry_enabled=False)
+        # telemetry_enabled stays default here. Since 2026-09-24 the opt-out
+        # covers this log too — it records absolute paths, so it is the more
+        # sensitive of the two stores, not the lesser. Disabling telemetry and
+        # still writing it was the defect, so a test asserting a write must not
+        # be opted out. See test_findingslog_privacy.py for the opt-out contract.
+        engine = Engine(rules=[AlwaysFindsRule()])
         engine.scan(f)
 
         from valca import findingslog

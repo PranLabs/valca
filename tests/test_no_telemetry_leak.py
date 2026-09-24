@@ -1,40 +1,60 @@
-"""Guardrail: no test may construct a live Engine() that writes real telemetry
-to the developer's actual ~/.vigil/events.jsonl.
+"""Guardrail: the suite must not write into the developer's real local stores.
 
-This caught a real bug (2026-07-16): 13 unmocked Engine() calls across
-test_engine.py, test_compliance.py, and test_rules_agency.py were silently
-polluting real telemetry on every pytest run, making VGL-D001 look like the
-most-triggered rule in production (it was mostly test noise) and VGL-A002
-look like a 0%-precision rule (one suppression test, run hundreds of times).
+Two incidents, same shape, different file. In July 2026 thirteen unmocked
+Engine() calls polluted real telemetry, making VGL-D001 look like the
+most-triggered rule in production when it was mostly test noise. Until
+2026-09-24 the findings log was being polluted the same way — a full run wrote
+37 records of fixture paths and pytest temp directories into the file
+`valca log` reads back.
 
-Every Engine(...) construction in tests/ must either:
-  - pass telemetry_enabled=False, or
-  - be in a file that patches telemetry._EVENTS_FILE (the real telemetry tests).
+Isolation is now structural: the autouse `_isolate_local_stores` fixture in
+conftest.py redirects both stores for every test, so the failure is prevented
+rather than detected. This file checks that the prevention is still in place —
+the fixture is the guard, and this is the guard on the guard.
 """
 import re
 from pathlib import Path
 
 TESTS_DIR = Path(__file__).parent
+CONFTEST = TESTS_DIR / "conftest.py"
 
 _ENGINE_CALL = re.compile(r"\bEngine\(")
 
 
-def test_no_test_leaks_telemetry():
-    violations = []
+def test_conftest_isolates_both_local_stores():
+    """The autouse fixture is what makes the whole class of leak impossible."""
+    text = CONFTEST.read_text()
+    assert "autouse=True" in text, "the isolation fixture is no longer autouse"
+    assert "_EVENTS_FILE" in text, "conftest no longer redirects the telemetry store"
+    assert "VIGIL_LOG_PATH" in text or "VALCA_LOG_PATH" in text, (
+        "conftest no longer redirects the findings log"
+    )
+
+
+def test_engine_constructions_are_accounted_for():
+    """Every live Engine() should be deliberate.
+
+    The autouse fixture already contains the damage, so this no longer guards
+    real data — it keeps the intent visible, so that a test relying on
+    telemetry being on says so rather than inheriting it by accident.
+    """
+    accounted = []
     for path in sorted(TESTS_DIR.glob("test_*.py")):
         if path.name == "test_no_telemetry_leak.py":
             continue
         text = path.read_text()
-        patches_events_file = "_EVENTS_FILE" in text
+        redirects_a_store = any(
+            marker in text
+            for marker in ("_EVENTS_FILE", "VIGIL_LOG_PATH", "VALCA_LOG_PATH", "_log_path")
+        )
         for i, line in enumerate(text.splitlines(), 1):
             if _ENGINE_CALL.search(line) and "telemetry_enabled=False" not in line:
-                if patches_events_file:
-                    continue  # this file mocks the real file — safe by design
-                violations.append(f"{path.name}:{i}: {line.strip()}")
+                if not redirects_a_store:
+                    accounted.append(f"{path.name}:{i}: {line.strip()}")
 
-    assert not violations, (
-        "Engine() constructed without telemetry_enabled=False, and this file "
-        "doesn't patch telemetry._EVENTS_FILE — this will write real events "
-        "to the developer's actual ~/.vigil/events.jsonl on every test run:\n"
-        + "\n".join(violations)
+    assert not accounted, (
+        "Engine() constructed with telemetry left on, in a file that redirects "
+        "neither local store. The conftest fixture still contains it, but say so "
+        "explicitly — pass telemetry_enabled=False, or redirect the store the "
+        "test is about:\n" + "\n".join(accounted)
     )

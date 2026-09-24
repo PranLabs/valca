@@ -47,7 +47,7 @@ class Engine:
         _telemetry.record(sorted_findings, telemetry_enabled=self._telemetry)
         if suppressed:
             _telemetry.record(suppressed, telemetry_enabled=self._telemetry, fp=True)
-        _findingslog.append(sorted_findings)
+        _findingslog.append(sorted_findings, enabled=self._telemetry)
         return sorted_findings
 
     def scan_dir(

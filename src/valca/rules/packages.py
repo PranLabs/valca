@@ -9,6 +9,7 @@ Network calls use a 24-hour local cache at ~/.vigil/pkg_cache.json.
 Fails open (no findings) if the network is unavailable.
 """
 import json
+import os
 import re
 import time
 import urllib.error
@@ -40,9 +41,30 @@ def _load_cache() -> dict:
 
 
 def _save_cache(cache: dict) -> None:
+    """Persist the cache, dropping anything already expired.
+
+    `_cache_get` treats an expired entry as a miss but left it in the dict, and
+    nothing else ever removed one, so the file only grew. By 2026-09-24 it held
+    502 entries totalling 118 MB of raw OSV payloads, **all of them expired** —
+    every package scan paid a 118 MB parse and re-serialise for zero cache hits.
+
+    Evicting here rather than in `_load_cache` keeps one authority: whatever is
+    written is exactly what is still valid.
+    """
+    now = time.time()
+    live = {
+        key: entry
+        for key, entry in cache.items()
+        if isinstance(entry, dict) and now - entry.get("ts", 0) < _CACHE_TTL
+    }
     try:
         _CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        _CACHE_PATH.write_text(json.dumps(cache))
+        is_new = not _CACHE_PATH.exists()
+        _CACHE_PATH.write_text(json.dumps(live))
+        # The cache is a full inventory of the project's dependencies and
+        # versions. Owner-only, and repair files created before this rule.
+        if is_new or (_CACHE_PATH.stat().st_mode & 0o077):
+            os.chmod(_CACHE_PATH, 0o600)
     except OSError:
         pass
 

@@ -40,6 +40,27 @@
 
   Every row above now has a test in `tests/test_compat_guarantees.py`.
 
+- **The findings log now honours the telemetry opt-out.** `telemetry = false`, or either
+  opt-out environment variable, silenced `events.jsonl` but not `findings.jsonl`, which
+  kept recording every finding together with its **absolute path**. It is the more
+  revealing of the two stores — `events.jsonl` holds rule ids and file extensions, this
+  holds your username, directory layout and project names — and it was the one still
+  being written after you asked it to stop. The decision now comes from a single place,
+  so the two stores cannot diverge again.
+
+- **The findings log and the package cache are owner-only (`0600`).** Both were created
+  at the default umask, so on a shared or multi-user machine any process running as
+  another user could read them. Existing files are repaired on the next write rather
+  than only new ones, since existing installs are the population that matters.
+
+- **The package cache no longer grows without limit.** Expired entries were treated as
+  misses but never removed, so `pkg_cache.json` only ever grew. A real installation
+  reached 502 entries and **118 MB** of stored vulnerability payloads with **every entry
+  expired**: each dependency scan parsed and rewrote 118 MB for zero cache hits. Expired
+  entries are now dropped when the cache is written. The file becomes small again on the
+  first scan after upgrading; nothing useful is lost, because expired entries were never
+  being used.
+
 - `valca stats`, `valca log` and `valca init` printed the pre-rename product name.
 - `valca --help` answered `usage: vigil`. The command now reports whichever name
   it was invoked as.
