@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         **Security vulnerabilities in Valca itself do not belong here.**
-        Use [private vulnerability reporting](https://github.com/vigilsec-io/cordon/security/advisories/new).
+        Use [private vulnerability reporting](https://github.com/PranLabs/valca/security/advisories/new).
         False positives and false negatives are correctness bugs — they belong here, and they are welcome.
   - type: dropdown
     id: kind

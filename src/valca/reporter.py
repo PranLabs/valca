@@ -183,7 +183,7 @@ def report_sarif(results: dict[Path, list[Finding]], tool_version: str | None = 
                 "driver": {
                     "name": "valca",
                     "version": tool_version,
-                    "informationUri": "https://pypi.org/project/vigilsec",
+                    "informationUri": "https://pypi.org/project/valca",
                     "rules": sarif_rules,
                 }
             },

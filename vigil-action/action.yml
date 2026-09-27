@@ -1,6 +1,6 @@
 name: 'Vigil Security'
 description: 'AI coding security co-pilot — scans for insecure code patterns at CI time'
-author: 'vigilsec'
+author: 'PranLabs'
 
 branding:
   icon: 'shield'
@@ -35,9 +35,9 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Install vigilsec
+    - name: Install Valca
       shell: bash
-      run: pip install vigilsec --quiet
+      run: pip install valca --quiet
 
     - name: Run Vigil scan (terminal output)
       id: scan

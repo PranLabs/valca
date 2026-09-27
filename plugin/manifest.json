@@ -1,13 +1,20 @@
 {
   "name": "valca",
-  "version": "0.5.0",
-  "description": "AI coding security co-pilot — blocks insecure code at generation time",
+  "version": "0.6.0",
+  "description": "AI coding security co-pilot \u2014 blocks insecure code at generation time",
   "author": {
     "name": "Prem Kumar Akula"
   },
   "license": "BUSL-1.1",
-  "repository": "https://github.com/vigilsec-io/cordon",
-  "keywords": ["security", "iac", "docker", "secrets", "linter", "devsecops"],
+  "repository": "https://github.com/PranLabs/valca",
+  "keywords": [
+    "security",
+    "iac",
+    "docker",
+    "secrets",
+    "linter",
+    "devsecops"
+  ],
   "hooks": {
     "PostToolUse": {
       "matcher": "Write|Edit|MultiEdit",

@@ -1,6 +1,33 @@
 # Changelog
 
-## Unreleased
+## 0.6.0
+
+### Changed
+
+- **The repository moved to [github.com/PranLabs/valca](https://github.com/PranLabs/valca).**
+  It was `vigilsec-io/cordon`, which left the project with three different names for one
+  thing. GitHub redirects the old paths, so existing clones, links and the images on
+  previously published release pages keep working — but new links should use the new URL.
+
+  The PyPI package name (`valca`), the `valca` and `vigil` commands, and the VS Code
+  extension id (`vigilsec.vigil-security`) are all **unchanged**. Nothing you have installed
+  or configured needs to change.
+
+### Fixed
+
+- **The GitHub Action installed the wrong package.** `vigil-action/action.yml` and the
+  workflow template both ran `pip install vigilsec`, which is the pre-rename package, last
+  published at 0.2.1 in July 2026. Anyone who adopted the published Action template was
+  running a scanner with 100 rules instead of 116 — missing the entire AI-agent set
+  (`VGL-GHA011`–`014`, `VGL-PI005`–`009`, `VGL-AGENT001`–`002`, `VGL-MCP004`–`005`) and
+  every fix since. Both now install `valca`.
+
+  **If you use the Action, re-copy the template**, or change `pip install vigilsec` to
+  `pip install valca` in your workflow.
+
+- **SARIF output linked to the wrong project page.** `tool.driver.informationUri` pointed at
+  `pypi.org/project/vigilsec`, so anyone following the link from a GitHub code-scanning
+  alert landed on the superseded package.
 
 ### Added
 

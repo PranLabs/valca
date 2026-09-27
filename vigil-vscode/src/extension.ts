@@ -96,7 +96,7 @@ function updateDiagnostics(
     diag.source = 'vigil';
     diag.code = {
       value: f.rule_id,
-      target: vscode.Uri.parse('https://github.com/vigilsec-io/cordon/issues'),
+      target: vscode.Uri.parse('https://github.com/PranLabs/valca/issues'),
     };
     return diag;
   });

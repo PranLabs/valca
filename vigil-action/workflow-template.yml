@@ -24,7 +24,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Valca
-        run: pip install vigilsec --quiet
+        run: pip install valca --quiet
 
       - name: Scan with Valca
         id: vigil

@@ -124,7 +124,7 @@ so rules with poor precision in *your* codebase are visible rather than guessed 
 **Blocking a vulnerable GitHub Actions workflow at write time:**
 
 <!-- GIF: terminal showing claude writing ai-review.yml → vigil hook fires → BLOCKED + VGL-GHA009 CRITICAL → fix applied → clean -->
-![Valca blocking a Comment-and-Control attack](https://raw.githubusercontent.com/vigilsec-io/cordon/main/docs/demo-gha.gif)
+![Valca blocking a Comment-and-Control attack](https://raw.githubusercontent.com/PranLabs/valca/main/docs/demo-gha.gif)
 
 In April 2026, researchers found that all three major AI coding agents (Claude Code, Gemini CLI, Copilot) could be hijacked to exfiltrate `ANTHROPIC_API_KEY` and `GITHUB_TOKEN` via a hidden HTML comment in a GitHub issue. CVSS 9.4. No special access required.
 
@@ -566,7 +566,7 @@ not enforcement.
 ## Development
 
 ```bash
-git clone https://github.com/vigilsec-io/cordon.git
+git clone https://github.com/PranLabs/valca.git
 cd vigil
 python3 -m venv venv && source venv/bin/activate
 pip install -e ".[dev]"
@@ -585,6 +585,6 @@ pytest tests/ -v
 
 Found a false positive? Want a rule that doesn't exist yet? Building with AI agents and hitting patterns Valca should catch?
 
-[Open an issue → github.com/vigilsec-io/cordon/issues](https://github.com/vigilsec-io/cordon/issues)
+[Open an issue → github.com/PranLabs/valca/issues](https://github.com/PranLabs/valca/issues)
 
 Or: `valca feedback`

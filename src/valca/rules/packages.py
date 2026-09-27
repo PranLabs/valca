@@ -25,7 +25,7 @@ _CACHE_PATH = Path.home() / ".vigil" / "pkg_cache.json"
 _CACHE_TTL = 86_400   # 24 hours
 _TIMEOUT = 4          # seconds per HTTP call — hook must stay fast
 _OSV_BATCH = "https://api.osv.dev/v1/querybatch"
-_UA = {"User-Agent": "vigilsec/0.1 (https://github.com/vigilsec-io/cordon)"}
+_UA = {"User-Agent": "valca (https://github.com/PranLabs/valca)"}
 
 
 # ── Cache helpers ─────────────────────────────────────────────────────────────

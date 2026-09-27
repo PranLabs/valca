@@ -21,9 +21,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/vigilsec-io/cordon"
+    "url": "https://github.com/PranLabs/valca"
   },
-  "homepage": "https://github.com/vigilsec-io/cordon",
+  "homepage": "https://github.com/PranLabs/valca",
   "activationEvents": [
     "onStartupFinished"
   ],

@@ -257,7 +257,7 @@ def main() -> None:
         sys.exit(0)
 
     if args.command == "feedback":
-        url = "https://github.com/vigilsec-io/cordon/issues"
+        url = "https://github.com/PranLabs/valca/issues"
         print(f"Opening {url}")
         webbrowser.open(url)
         return
@@ -318,7 +318,7 @@ def main() -> None:
             _dim = "\033[2m" if not args.no_color else ""
             _rst = "\033[0m" if not args.no_color else ""
             print(
-                f"{_dim}── Valca · github.com/vigilsec-io/cordon ──{_rst}",
+                f"{_dim}── Valca · github.com/PranLabs/valca ──{_rst}",
                 file=sys.stderr,
             )
 

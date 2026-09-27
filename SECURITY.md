@@ -4,7 +4,7 @@
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-Use **[GitHub's private vulnerability reporting](https://github.com/vigilsec-io/cordon/security/advisories/new)**
+Use **[GitHub's private vulnerability reporting](https://github.com/PranLabs/valca/security/advisories/new)**
 on this repository. That channel is private, creates a draft advisory, and supports assigning a CVE
 once the issue is confirmed.
 

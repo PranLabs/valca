@@ -20,7 +20,7 @@ open-source licence, and that affects contribution terms.
 ## Development setup
 
 ```bash
-git clone https://github.com/vigilsec-io/cordon.git
+git clone https://github.com/PranLabs/valca.git
 cd cordon
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt

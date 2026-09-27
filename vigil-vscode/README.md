@@ -97,8 +97,8 @@ Open Command Palette (`Cmd+Shift+P`):
 
 ## License
 
-[BUSL 1.1](https://github.com/vigilsec-io/cordon/blob/main/LICENSE) — free for non-commercial use. Converts to MIT in 2030.
+[BUSL 1.1](https://github.com/PranLabs/valca/blob/main/LICENSE) — free for non-commercial use. Converts to MIT in 2030.
 
 ---
 
-[Issues & feedback](https://github.com/vigilsec-io/cordon/issues) · [PyPI](https://pypi.org/project/valca/)
+[Issues & feedback](https://github.com/PranLabs/valca/issues) · [PyPI](https://pypi.org/project/valca/)

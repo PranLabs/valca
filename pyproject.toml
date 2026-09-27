@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "valca"
-version = "0.5.0"
+version = "0.6.0"
 description = "AI coding security co-pilot — blocks insecure code at generation time"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -15,8 +15,8 @@ keywords = ["security", "devsecops", "docker", "ai", "claude", "static-analysis"
 
 [project.urls]
 Homepage = "https://valca.io"
-Source = "https://github.com/vigilsec-io/cordon"
-Issues = "https://github.com/vigilsec-io/cordon/issues"
+Source = "https://github.com/PranLabs/valca"
+Issues = "https://github.com/PranLabs/valca/issues"
 
 # Both commands are intentionally exposed during the vigilsec → valca transition.
 # `vigil` MUST remain until at least 1.0: plugin/hook.sh invokes it, and dropping it
