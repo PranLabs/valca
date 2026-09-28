@@ -1,8 +1,17 @@
 # Changelog
 
-## Unreleased
+## 0.6.1
 
 ### Changed
+
+- **Listed on the MCP Registry.** The package README now carries an `mcp-name`
+  marker, which is how the registry verifies that the publisher of
+  `io.github.pranlabs/valca` also owns the `valca` package on PyPI. The marker is
+  an HTML comment and does not appear on the rendered page.
+
+  Nothing about the software changed in this release. It exists because the
+  registry reads that marker from the live PyPI description, so it has to be in a
+  published release before the server can be submitted.
 
 - **The VS Code extension and the GitHub Action now have their own repositories.**
   This repository holds the scanner and nothing else.
@@ -19,6 +28,23 @@
   template. The template also pinned `actions/checkout@v4`, `setup-python@v5` and
   `codeql-action@v3` — three, two and one major versions behind current. The new
   one is on v7, v7 and v4.
+
+### Fixed
+
+- **The Claude Code plugin was not in the plugin format.** `plugin/manifest.json`
+  is not a layout the loader recognises: the manifest belongs at
+  `.claude-plugin/plugin.json`, hooks belong in `hooks/hooks.json`, and the
+  `install` and `rules` keys it carried are not fields at all. Installed as it
+  stood, the plugin would have loaded and done nothing.
+
+  The plugin now also ships `.mcp.json`, so a single install gives you both the
+  PostToolUse hook that runs on every write and the MCP server the agent can call
+  on demand.
+
+- **`plugin/README_INSTALL.md` told users to `pip install vigil`.** That is a
+  different author's package on PyPI, so anyone following those instructions
+  installed someone else's code. The file also still advertised 15 rules against a
+  shipped 116.
 
 
 ## 0.6.0
