@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "valca": {
+      "command": "valca-mcp",
+      "args": []
+    }
+  }
+}
