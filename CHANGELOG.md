@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **The VS Code extension and the GitHub Action now have their own repositories.**
+  This repository holds the scanner and nothing else.
+
+  | Moved to | What it is |
+  |---|---|
+  | [PranLabs/valca-action](https://github.com/PranLabs/valca-action) | The GitHub Action. Marketplace requires `action.yml` at the repository root, so it could not be listed from a subdirectory |
+  | [PranLabs/valca-vscode](https://github.com/PranLabs/valca-vscode) | The VS Code extension. A TypeScript toolchain in a Python package's repo meant npm dependency bots filing pull requests against a pytest CI |
+
+  Nothing you install changes. The PyPI package, both the `valca` and `vigil`
+  commands, and the extension id `vigilsec.vigil-security` are all the same.
+
+  **If you use the Action**, `PranLabs/valca-action@v1` replaces copying the old
+  template. The template also pinned `actions/checkout@v4`, `setup-python@v5` and
+  `codeql-action@v3` — three, two and one major versions behind current. The new
+  one is on v7, v7 and v4.
+
+
 ## 0.6.0
 
 ### Changed

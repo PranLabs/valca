@@ -1,8 +1,0 @@
-# Valca core has zero required runtime dependencies — stdlib only.
-# External tools are invoked as subprocesses when present:
-#
-#   pip-audit  →  pip install pip-audit          (Python CVE scanning)
-#   trivy      →  brew install trivy             (IaC deep scan — future rule)
-#   npm        →  installed via Node.js          (npm audit for package.json)
-#
-# To install vigil itself: pip install -e .

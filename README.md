@@ -499,22 +499,38 @@ Then add it to `DEFAULT_RULES` in `src/valca/rules/__init__.py`. Write tests. Do
 
 ## GitHub Actions
 
-Add Valca to any CI pipeline — copy `vigil-action/workflow-template.yml` into your project's `.github/workflows/vigil.yml`:
+Use the action — [PranLabs/valca-action](https://github.com/PranLabs/valca-action):
 
 ```yaml
-- name: Install Valca
-  run: pip install valca --quiet
+permissions:
+  contents: read
+  security-events: write
 
-- name: Scan with Valca
-  run: valca scan . --no-color
+steps:
+  - uses: actions/checkout@v7
 
-- name: Upload SARIF to GitHub Code Scanning
-  uses: github/codeql-action/upload-sarif@v3
-  with:
-    sarif_file: valca-results.sarif
+  - uses: PranLabs/valca-action@v1
+    with:
+      severity: HIGH
+      version: "0.6.0"    # pin for reproducible CI
+
+  - uses: github/codeql-action/upload-sarif@v4
+    if: always()
+    with:
+      sarif_file: valca-results.sarif
+      category: valca
 ```
 
-Findings appear as inline annotations on PR diffs in the GitHub Security tab.
+Or call it directly, without the action:
+
+```yaml
+- run: pip install valca --quiet
+- run: valca scan . --no-color
+- run: valca scan . --format sarif > valca-results.sarif
+```
+
+Findings appear as inline annotations on PR diffs, and in the repository's
+Security tab.
 
 ---
 

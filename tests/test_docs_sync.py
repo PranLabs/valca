@@ -79,14 +79,28 @@ def test_every_cli_command_is_documented() -> None:
     assert not undocumented, f"CLI commands missing from README: {undocumented}"
 
 
-def test_vscode_listing_rule_count_matches_engine() -> None:
-    """The Marketplace listing is a separate public surface and drifts independently."""
-    if not VSCODE_README.exists():
-        return
-    match = re.search(r"What It Catches \((\d+) rules?\)", VSCODE_README.read_text())
-    assert match, "VS Code README must state 'What It Catches (N rules)'"
-    assert int(match.group(1)) == len(engine_rule_ids()), (
-        f"VS Code listing advertises {match.group(1)} rules, engine emits {len(engine_rule_ids())}"
+def test_vscode_guard_moved_rather_than_vanished() -> None:
+    """The Marketplace rule-count check now lives in PranLabs/valca-vscode.
+
+    The extension was split into its own repository on 2026-09-27. The old test
+    here read `vigil-vscode/README.md` and began with `if not exists(): return`,
+    so the moment that directory left, it would have passed forever while
+    checking nothing — the precise way a guard disappears without anyone
+    noticing.
+
+    It was replaced by `scripts/check_listing.py` in the extension's repository,
+    which is a stronger check: it installs the *published* `valca` package and
+    compares the listing against what a user actually receives, rather than
+    against source sitting in a sibling directory. The extension's CI runs it on
+    every push.
+
+    This test exists so the move is recorded where the old guard used to be,
+    instead of leaving a silent hole.
+    """
+    assert not VSCODE_README.exists(), (
+        "vigil-vscode/ is back in this repository. The Marketplace rule-count "
+        "guard lives in PranLabs/valca-vscode now; if the extension returns, the "
+        "guard has to come back with it or the listing can drift unchecked again."
     )
 
 

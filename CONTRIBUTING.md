@@ -23,7 +23,7 @@ open-source licence, and that affects contribution terms.
 git clone https://github.com/PranLabs/valca.git
 cd cordon
 python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt -r requirements-dev.txt
+pip install -r requirements-dev.txt
 pytest -q                 # full suite must pass before you open a PR
 ```
 
