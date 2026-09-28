@@ -1,3 +1,5 @@
+<!-- mcp-name: io.github.pranlabs/valca -->
+
 # Valca
 
 **AI coding security co-pilot — blocks insecure code at the moment of generation.**

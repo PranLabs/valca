@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.pranlabs/valca",
+  "title": "Valca",
+  "description": "Scans code, IaC and AI-agent config for security problems. Read-only \u2014 nothing can be edited.",
+  "version": "0.6.0",
+  "repository": {
+    "url": "https://github.com/PranLabs/valca",
+    "source": "github"
+  },
+  "websiteUrl": "https://valca.io",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "valca",
+      "version": "0.6.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
