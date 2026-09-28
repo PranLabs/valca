@@ -302,3 +302,58 @@ def test_plugin_bundles_the_mcp_server() -> None:
         f".mcp.json runs {command!r}, which is not a console script this package "
         f"installs ({sorted(scripts)}). The plugin would fail at startup."
     )
+
+
+# ── MCP Registry publishing ──────────────────────────────────────────────────
+# The registry verifies PyPI package ownership by looking for an `mcp-name:`
+# marker in the package README, which is the description shown on pypi.org. Three
+# things must agree — server.json's name, the README marker, and the package
+# identifier — and none of them is near the others in the tree. If any drifts,
+# publishing fails with an ownership error that points at neither file.
+
+SERVER_JSON = REPO / "server.json"
+_MCP_NAME = re.compile(r"mcp-name:\s*(\S+)")
+
+
+def _server_json() -> dict:
+    import json
+
+    return json.loads(SERVER_JSON.read_text())
+
+
+def test_readme_carries_the_registry_ownership_marker() -> None:
+    match = _MCP_NAME.search(README.read_text())
+    assert match, (
+        "README.md must contain an `mcp-name:` marker. The MCP Registry reads it "
+        "from the PyPI description to verify we own the package; without it, "
+        "publishing is rejected."
+    )
+    assert match.group(1) == _server_json()["name"], (
+        f"README marker says {match.group(1)!r}, server.json says "
+        f"{_server_json()['name']!r}. They must match exactly."
+    )
+
+
+def test_server_json_points_at_the_package_we_publish() -> None:
+    server = _server_json()
+    package = server["packages"][0]
+    assert package["registryType"] == "pypi", package["registryType"]
+    assert package["identifier"] == _pyproject()["name"], (
+        f"server.json publishes {package['identifier']!r} but this project is "
+        f"{_pyproject()['name']!r}"
+    )
+    assert package["version"] == _pyproject()["version"], (
+        f"server.json version {package['version']} != package version "
+        f"{_pyproject()['version']}. The registry entry would point at a release "
+        f"that does not exist."
+    )
+    assert server["version"] == _pyproject()["version"]
+
+
+def test_server_name_uses_the_github_namespace_we_control() -> None:
+    """`io.github.<org>` is authenticated against GitHub at publish time."""
+    name = _server_json()["name"]
+    assert name.startswith("io.github.pranlabs/"), (
+        f"{name!r} is not under a namespace we can authenticate. Publishing "
+        f"requires proving control of the GitHub org in the name."
+    )
