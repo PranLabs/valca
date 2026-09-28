@@ -1,0 +1,20 @@
+{
+  "name": "valca",
+  "description": "Blocks insecure code, IaC and AI-agent configuration at the moment of generation",
+  "version": "0.6.0",
+  "author": {
+    "name": "Prem Kumar Akula"
+  },
+  "license": "BUSL-1.1",
+  "homepage": "https://valca.io",
+  "repository": "https://github.com/PranLabs/valca",
+  "keywords": [
+    "security",
+    "iac",
+    "docker",
+    "secrets",
+    "devsecops",
+    "prompt-injection"
+  ],
+  "mcpServers": "./.mcp.json"
+}

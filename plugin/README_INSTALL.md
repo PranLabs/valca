@@ -1,55 +1,44 @@
-# Vigil — Claude Code Plugin Install
+# Valca — Claude Code plugin
 
-Vigil intercepts every file Claude writes and blocks it if CRITICAL or HIGH security findings are detected. No config required.
+Valca inspects every file Claude Code writes and blocks the write when it finds
+a CRITICAL or HIGH security problem. It runs before the file reaches disk, so the
+model can correct itself in the same turn rather than leaving something for a
+reviewer to catch later.
 
-## 3-Step Install
+The plugin carries both halves of the product:
+
+- a **PostToolUse hook** that runs on every write, whether the model wants it or not
+- an **MCP server** the agent can call to scan on demand
+
+No other distribution channel installs both at once.
+
+## Install
 
 ```bash
-# 1. Install
-pip install vigil
+pip install "valca[mcp]"
+```
 
-# 2. Wire the Claude Code hook (project-level)
+Then add the plugin to Claude Code. The hook and the MCP server are wired up
+together from `.claude-plugin/plugin.json`.
+
+Installing without the MCP extra is fine — `pip install valca` gives you the
+scanner and the hook, and the core keeps zero runtime dependencies. The extra
+only adds the MCP SDK.
+
+## Wiring the hook by hand
+
+If you would rather not use the plugin, `valca init` writes the hook into
+`.claude/settings.json` for you:
+
+```bash
 cd /your/project
-vigil init
-
-# 3. Reload Claude Code
-# Close and reopen the Claude Code session. Done.
+valca init            # this project
+valca init --global   # every project
 ```
 
-For a user-wide install (applies to all projects):
-```bash
-vigil init --global
-```
+Reload Claude Code afterwards.
 
-## What it catches
-
-| Rule | Severity | What triggers it |
-|------|----------|-----------------|
-| VGL-D001 | CRITICAL | docker-compose port binding without `127.0.0.1:` prefix |
-| VGL-S001 | CRITICAL | AWS access key in source code |
-| VGL-S002 | CRITICAL | Hardcoded password |
-| VGL-S003 | HIGH | Hardcoded API key |
-| VGL-S004 | HIGH | Hardcoded token |
-| VGL-I001 | CRITICAL | `eval(user_input)` injection |
-| VGL-I002 | HIGH | `subprocess.run(..., shell=True)` |
-| VGL-I003 | HIGH | `os.system()` call |
-| VGL-DF001 | HIGH | Dockerfile missing USER directive (runs as root) |
-| VGL-DF002 | MEDIUM | Dockerfile `FROM python:latest` (unpinned) |
-| VGL-DF003 | HIGH | `ENV PASSWORD=secret` or `ARG TOKEN=default` baked into image |
-| VGL-N001 | HIGH | nginx missing X-Frame-Options / weak TLS |
-| VGL-T001 | HIGH | Trivy IaC deep scan (Dockerfile, Terraform) |
-| VGL-DEP001 | HIGH | pip-audit CVE in requirements.txt |
-| VGL-DEP002 | HIGH | npm audit CVE in package.json |
-
-## Exit codes
-
-- `0` — clean
-- `1` — advisory findings (MEDIUM/LOW/INFO) — write allowed
-- `2` — CRITICAL or HIGH — **Claude Code blocks the write inline**
-
-## Manual hook setup
-
-If `vigil init` can't find `hook.sh`, add this to `.claude/settings.json`:
+To do it yourself, add this to `.claude/settings.json`:
 
 ```json
 {
@@ -60,7 +49,8 @@ If `vigil init` can't find `hook.sh`, add this to `.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "/absolute/path/to/vigil/plugin/hook.sh"
+            "command": "/absolute/path/to/valca/plugin/hook.sh",
+            "timeout": 30
           }
         ]
       }
@@ -69,10 +59,64 @@ If `vigil init` can't find `hook.sh`, add this to `.claude/settings.json`:
 }
 ```
 
-## Scan without the hook
+## What it catches
+
+**116 rules across 27 categories** — secrets and credentials, Docker and
+docker-compose, Dockerfiles, Kubernetes, Terraform, IAM policy, nginx, crypto,
+deserialization, XSS, SSRF, shell and subprocess use, and the AI-agent attack
+surface: prompt injection, unsafe Model Context Protocol configuration, GitHub
+Actions agent workflows, and dangerous instructions in agent config files.
+
+The full catalogue is generated from the rule registry and lives in the
+[README](https://github.com/PranLabs/valca#rules). It is not duplicated here,
+because a hand-copied rule list is a list that goes out of date — an earlier
+version of this file advertised 15 rules against a shipped 116.
+
+The one nothing else catches:
+
+```yaml
+ports:
+  - "5432:5432"     # binds to 0.0.0.0, bypasses UFW, reachable from the internet
+```
+
+The correct form is `"127.0.0.1:5432:5432"`. Checkov, Trivy, Snyk and Semgrep all
+miss it.
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Clean |
+| `1` | Advisory findings only (MEDIUM / LOW / INFO) — the write proceeds |
+| `2` | CRITICAL or HIGH — **Claude Code blocks the write** |
+
+## Using the MCP server
+
+Once installed, the agent can ask for a scan rather than only being blocked by
+one. Two tools, both read-only:
+
+| Tool | Returns |
+|---|---|
+| `scan(path)` | Findings: rule, severity, message, file, line, suggested fix |
+| `list_rules()` | The full catalogue |
+
+There is deliberately no tool that edits or fixes anything. A scanner that can
+modify code is a new attack surface, and it is the one `VGL-MCP003` and
+`VGL-MCP005` exist to catch.
+
+Scanning cannot leave the directory the server started in, returned paths are
+relative to it, and matched source lines are never returned — for the secret
+rules, that line *is* the secret.
+
+## Scanning without Claude Code
 
 ```bash
-vigil scan path/to/file.yml          # terminal output
-vigil scan path/to/project/ --format json   # JSON
-vigil scan path/to/project/ --format sarif  # SARIF 2.1.0 (GitHub Advanced Security)
+valca scan path/to/file.yml
+valca scan path/to/project/ --format json
+valca scan path/to/project/ --format sarif    # SARIF 2.1.0, for code scanning
+valca log                                      # what has been caught, and when
+valca stats                                    # rule frequency and precision
 ```
+
+The `vigil` command still works everywhere `valca` does. It is retained until at
+least 1.0 so existing hooks and scripts keep running.
