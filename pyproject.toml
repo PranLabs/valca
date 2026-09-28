@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "valca"
-version = "0.6.0"
+version = "0.6.1"
 description = "AI coding security co-pilot — blocks insecure code at generation time"
 readme = "README.md"
 license = {file = "LICENSE"}

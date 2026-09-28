@@ -1,7 +1,7 @@
 {
   "name": "valca",
   "description": "Blocks insecure code, IaC and AI-agent configuration at the moment of generation",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": {
     "name": "Prem Kumar Akula"
   },
